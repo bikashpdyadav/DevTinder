@@ -1,6 +1,16 @@
 const express = require('express');
 const app = express();
 
+const { adminAuth } = require("./middlewares/auth");
+app.use("/admin", adminAuth);
+app.get("/admin/getdata", (req,res) => {
+    res.send("All data send");
+});
+
+app.delete("/admin/delete", (req,res) => {
+    res.send("Deleted user");
+});
+
 app.get("/user",(req,res) => {
     res.send({firstName:"Bikash", lastName:"Yadav"});
 })
