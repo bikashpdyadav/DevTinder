@@ -1,19 +1,46 @@
 const express = require('express');
 const app = express();
 const connectDB = require("./config/database");
-const User = require("./models/user")
+const User = require("./models/user");
+app.use(express.json());
+
 app.post('/signup', async (req,res) => {
-    const userObj = {
-        firstName: "Akshay",
-        lastName: "Saini",
-        emaiId: "akshay@saini123.com",
-        age: 28,
-        password:"akshay@123"
-    }
+    //console.log(req.body);
+    const userObj = req.body;
 
     const user = new User(userObj);
     await user.save();
     res.send("User added successfully!!");
+});
+
+app.get('/user', async (req,res) => {
+    const email = req.body.emailId;
+    try{
+        const user = await User.find({ emailId: email });
+        res.send(user);
+    }catch(err){
+        res.status(400).end("Something went wrong");
+    }
+    
+});
+
+app.delete('/user', async (req,res) => {
+    const userId = req.body.userId;
+    try{
+        const user = await User.findByIdAndDelete(userId);
+        res.send(user+"User deleted successfully");
+    }catch(err){
+        res.status(400).end("Something went wrong");
+    }
+})
+app.get('/feed', async (req,res) => {
+    try{
+        const users = await User.find({});
+        res.send(users);
+    }
+    catch(err){
+        res.status(400).end("Something went wrong");
+    }
 })
 
 connectDB().then(() => {
