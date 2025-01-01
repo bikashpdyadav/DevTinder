@@ -1,29 +1,27 @@
 const express = require('express');
 const app = express();
+const connectDB = require("./config/database");
+const User = require("./models/user")
+app.post('/signup', async (req,res) => {
+    const userObj = {
+        firstName: "Akshay",
+        lastName: "Saini",
+        emaiId: "akshay@saini123.com",
+        age: 28,
+        password:"akshay@123"
+    }
 
-const { adminAuth } = require("./middlewares/auth");
-app.use("/admin", adminAuth);
-app.get("/admin/getdata", (req,res) => {
-    res.send("All data send");
-});
+    const user = new User(userObj);
+    await user.save();
+    res.send("User added successfully!!");
+})
 
-app.delete("/admin/delete", (req,res) => {
-    res.send("Deleted user");
-});
-
-app.get("/user",(req,res) => {
-    res.send({firstName:"Bikash", lastName:"Yadav"});
+connectDB().then(() => {
+    console.log("Database connection established...");
+    app.listen(3000, () => {
+        console.log("Server is running...");
+    })
+    console.log("!Shree Ganesha!")
+}).catch((err) => {
+    console.log("Database couldn't be connected!!");
 })
-app.use("/test",(req,res) => {
-    res.send("Namaste Bikash");
-})
-app.post("/user",(req,res) => {
-    res.send("Data saved success.")
-})
-app.delete("/user",(req,res) => {
-    res.send("Data deleted success.")
-})
-app.listen(3000, () => {
-    console.log("Server is running...");
-})
-console.log("!Shree Ganesha!")
