@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
+        minLength: 4,
+        maxLength: 50,
     },
     lastName: {
         type: String
@@ -14,6 +16,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid email address: "+value);
+            }
+        }
     },
     password: {
         type: String,
@@ -33,6 +40,11 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid photo URL: "+value);
+            }
+        }
     },
     about: {
         type: String,
