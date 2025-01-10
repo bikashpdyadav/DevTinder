@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -16,9 +19,9 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw new Error("Invalid email address: "+value);
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error("Invalid email address: " + value);
             }
         }
     },
@@ -32,17 +35,17 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        validate(value){
-            if(!["male","female","others"].include(value)){
+        validate(value) {
+            if (!["male", "female", "others"].include(value)) {
                 throw new Error("Gender data is not correct");
             }
         }
     },
     photoUrl: {
         type: String,
-        validate(value){
-            if(!validator.isURL(value)){
-                throw new Error("Invalid photo URL: "+value);
+        validate(value) {
+            if (!validator.isURL(value)) {
+                throw new Error("Invalid photo URL: " + value);
             }
         }
     },
@@ -53,7 +56,20 @@ const userSchema = new mongoose.Schema({
     skills: {
         type: [String],
     },
-},{timestamps: true});
+}, { timestamps: true });
 
-const User = mongoose.model("User",userSchema);
+userSchema.methods.getJWT= async function () {
+    const user = this;
+    const token = await jwt.sign({_id: user._id}, "secret");
+    return token;
+}
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+    const user = this;
+    const passwordHash = user.password;
+    const isPasswordValid = await bcrypt.compare(passwordInputByUser, passwordHash);
+    return isPasswordValid;
+}
+
+const User = mongoose.model("User", userSchema);
 module.exports = User;

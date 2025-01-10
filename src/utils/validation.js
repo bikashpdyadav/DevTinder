@@ -1,5 +1,5 @@
-const validateSignupData = (req) => {
-    const {firstName, lastName, emailId, password} = req.body;
+const validateSignupData = (userObj) => {
+    const {firstName, lastName, emailId, password} = userObj;
     if(!firstName || !lastName){
         throw new Error("Invalid name");
     }
