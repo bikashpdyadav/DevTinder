@@ -5,7 +5,6 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 authRouter.use(cookieParser());
-authRouter.use(express.json());
 
 authRouter.post('/signup', async (req, res) => {
     //console.log(req.body);
@@ -44,4 +43,10 @@ authRouter.post('/login', async (req,res) => {
     }
 });
 
+authRouter.post('/logout', async(req,res) => {
+    res.cookie("token", null, {
+        expires: new Date(Date.now())
+    });
+    res.send();
+})
 module.exports = authRouter;

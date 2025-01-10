@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const connectDB = require("./config/database");
 
+app.use(express.json());
+
 const authRouter = require('./routers/authRouter');
 const profileRouter = require('./routers/profileRouter');
 const requestRouter = require('./routers/requestRouter');
