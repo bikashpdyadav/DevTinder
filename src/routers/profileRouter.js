@@ -26,5 +26,14 @@ profileRouter.patch("/profile/edit", userAuth, async (req,res) => {
     catch(err){
         res.status(400).send("Error while editing: "+err);
     }
+});
+
+profileRouter.patch("/profile/password", userAuth, async (req,res) => {
+    try{
+        
+    }
+    catch(err){
+        res.status(400).send("Couldn't update password: "+err);
+    }
 })
 module.exports = profileRouter;
