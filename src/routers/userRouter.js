@@ -1,6 +1,32 @@
 const express = require('express');
 const userRouter = express.Router();
 const User = require("../models/user");
+const ConnectionRequest = require("../models/connectionRequest");
+const { userAuth } = require('../middlewares/auth');
+
+userRouter.get('/user/requests/received', userAuth, async (req,res) => {
+    try{
+        const loggedInUser = req.user;
+        const connectionRequests = await ConnectionRequest.find({
+            toUserId: loggedInUser._id,
+            status: "interested",
+        }).populate("fromUserId","firstName lastName");
+
+        res.json({message: "Data fetched successfully!! ",connectionRequests});
+    }
+    catch(err){
+        req.statusCode(400).send("ERROR: "+err.message);
+    }
+});
+
+userRouter.get('/user/requests/', userAuth, async (req,res) => {
+    try{
+
+    }
+    catch(err){
+        res.status(400).send("ERROR: "+err.message);
+    }
+});
 
 userRouter.patch('/user/:userId', async (req, res) => {
     const userId = req.params?.userId;
@@ -22,7 +48,7 @@ userRouter.patch('/user/:userId', async (req, res) => {
     } catch (err) {
         res.status(400).send("Update failed: " + err.message);
     }
-})
+});
 
 userRouter.get('/user', async (req, res) => {
     const email = req.body.emailId;
