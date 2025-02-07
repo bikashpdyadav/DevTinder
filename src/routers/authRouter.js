@@ -34,10 +34,14 @@ authRouter.post('/login', async (req, res) => {
 
         const isPasswordValid = await user.validatePassword(password);
 
-        if (!isPasswordValid) return res.status(401).send("Incorrect password");
+        if (!isPasswordValid) return res.status(401).send("Invalid credentials");
 
         const token = await user.getJWT();
-        res.cookie("token", token);
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true
+        });
         return res.status(200).json(user); // ✅ Return to prevent further execution
     } catch (err) {
         return res.status(500).send("Error while signing in: " + err);
@@ -45,10 +49,13 @@ authRouter.post('/login', async (req, res) => {
 });
 
 authRouter.post('/logout', async (req, res) => {
-    res.cookie("token", null, {
-        expires: new Date(Date.now())
+    res.clearCookie("token", {
+        httpOnly: true,      // Ensures it's not accessible by JS
+        sameSite: "None",     // Allows cross-origin cookie clearing
+        secure: true          // Required if using HTTPS
     });
-    res.send();
+
+    return res.status(200).send("Logout Successful!!");
 });
 
 module.exports = authRouter;
