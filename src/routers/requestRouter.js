@@ -39,7 +39,7 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req,res) 
         const data = await connectionRequest.save();
         res.json({
             message: req.user.firstName+" "+status+" "+toUser.firstName,
-            data,
+            data: data,
         });
     }
     catch(err){
@@ -69,7 +69,7 @@ requestRouter.post('/request/review/:status/:requestId', userAuth, async (req,re
 
         connectionRequest.status = status;
         const data = await connectionRequest.save();
-        res.json({message: "Connection request " + status,data});
+        res.json({message: "Connection request " + status, data: data});
     }
     catch(err){
         res.status(400).send("ERROR "+err);

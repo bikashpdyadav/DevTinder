@@ -14,7 +14,7 @@ userRouter.get('/user/requests/received', userAuth, async (req, res) => {
             status: "interested",
         }).populate("fromUserId", USER_SAFE_DATA);
 
-        res.json({ message: "Data fetched successfully!! ", connectionRequests });
+        res.json({ message: "Data fetched successfully!! ", data: connectionRequests });
     }
     catch (err) {
         req.statusCode(400).send("ERROR: " + err.message);
@@ -37,7 +37,7 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
             }
             return row.fromUserId;
         });
-        res.json({ message: "Connection fetched successfully", data });
+        res.json({ message: "Connection fetched successfully", data: data });
     }
     catch (err) {
         res.status(400).send("ERROR: " + err.message);
@@ -72,7 +72,7 @@ userRouter.get('/feed', userAuth, async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        res.json(users);
+        res.json({message: "Feed fetched successfully", data:users});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Something went wrong" });

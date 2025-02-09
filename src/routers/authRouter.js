@@ -17,8 +17,15 @@ authRouter.post('/signup', async (req, res) => {
         const user = new User({
             firstName, lastName, emailId, password: hashedPassword,
         });
-        await user.save();
-        res.send("User added successfully!!");
+        const savedUser = await user.save();
+
+        const token = savedUser.getJWT();
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true
+        });
+        res.json({message: "User added successfully!!", data: savedUser});
     }
     catch (err) {
         res.status(400).send("Error while signing up: " + err);
@@ -42,7 +49,7 @@ authRouter.post('/login', async (req, res) => {
             sameSite: "None",
             secure: true
         });
-        return res.status(200).json(user); // ✅ Return to prevent further execution
+        return res.status(200).json({message: "Login Successful", data: user}); // ✅ Return to prevent further execution
     } catch (err) {
         return res.status(500).send("Error while signing in: " + err);
     }
