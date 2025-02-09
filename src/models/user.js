@@ -60,11 +60,15 @@ const userSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-userSchema.methods.getJWT= async function () {
+userSchema.methods.getJWT = function () {
     const user = this;
-    const token = await jwt.sign({_id: user._id}, process.env.PASSWORD_ENCRYPTION_SECRET);
+    const token = jwt.sign(
+        { _id: user._id }, 
+        process.env.PASSWORD_ENCRYPTION_SECRET, 
+        { expiresIn: "7d" }
+    );
     return token;
-}
+};
 
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
     const user = this;

@@ -7,30 +7,32 @@ const cookieParser = require("cookie-parser");
 authRouter.use(cookieParser());
 
 authRouter.post('/signup', async (req, res) => {
-    //console.log(req.body);
-    const userObj = req.body;
     try {
-        console.log(userObj)
-        validateSignupData(userObj);
-        const { firstName, lastName, emailId, password } = userObj;
+        console.log(req.body);
+        validateSignupData(req.body);
+        const { firstName, lastName, emailId, password } = req.body;
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
             firstName, lastName, emailId, password: hashedPassword,
         });
-        const savedUser = await user.save();
 
-        const token = savedUser.getJWT();
+        const savedUser = await user.save();
+        const freshUser = await User.findById(savedUser._id);
+        const token = freshUser.getJWT();
+
         res.cookie("token", token, {
             httpOnly: true,
             sameSite: "None",
             secure: true
         });
-        res.json({message: "User added successfully!!", data: savedUser});
-    }
-    catch (err) {
+
+        res.json({ message: "User added successfully!!", data: freshUser });
+    } catch (err) {
         res.status(400).send("Error while signing up: " + err);
     }
 });
+
 
 authRouter.post('/login', async (req, res) => {
     try {
