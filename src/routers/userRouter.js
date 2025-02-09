@@ -58,24 +58,26 @@ userRouter.get('/feed', userAuth, async (req, res) => {
             ],
         }).select("fromUserId toUserId");
 
-        const hideUsersFromFeed = new Set();
+        const hideUsersFromFeed = new Set([loggedInUser._id.toString()]);
+
         connectionRequests.forEach(req => {
             hideUsersFromFeed.add(req.fromUserId.toString());
             hideUsersFromFeed.add(req.toUserId.toString());
         });
 
         const users = await User.find({
-            _id: { $nin: Array.from(hideUsersFromFeed) },
-            _id: { $ne: loggedInUser._id },
-        }).select(USER_SAFE_DATA).skip(skip).limit(limit);
+            _id: { $nin: [...hideUsersFromFeed] }
+        })
+            .select(USER_SAFE_DATA)
+            .skip(skip)
+            .limit(limit);
 
-        res.send(users);
+        res.json(users);
     } catch (err) {
         console.error(err);
-        res.status(500).send("Something went wrong");
+        res.status(500).json({ message: "Something went wrong" });
     }
 });
-
 
 userRouter.patch('/user/:userId', async (req, res) => {
     const userId = req.params?.userId;
